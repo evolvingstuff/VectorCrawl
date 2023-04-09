@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VectorCrawl</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .form-container {
+      display: grid;
+      grid-template-columns: auto auto auto;
+      grid-template-rows: auto auto;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+    input[type="url"],
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .right-align {
+      text-align: right;
+    }
+    .left-align {
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>VectorCrawl</h1>
+  <div class="form-container">
+    <label for="url" class="right-align">Enter a URL to crawl and embed:</label>
+    <input type="url" id="url" required>
+    <button type="submit" id="crawl-button" class="left-align">Crawl</button>
+    <label for="query" class="right-align">Enter your search query:</label>
+    <input type="text" id="query" required disabled>
+    <button type="submit" id="search-button" class="left-align">Search</button>
+  </div>
+  <br>
+  <div id="results"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const crawlButton = document.getElementById("crawl-button");
+      const searchButton = document.getElementById("search-button");
+      const urlInput = document.getElementById("url");
+      const queryInput = document.getElementById("query");
+      const resultsDiv = document.getElementById("results");
+
+      // Disable the search query input initially
+      queryInput.disabled = true;
+
+      crawlButton.addEventListener("click", async () => {
+        const url = urlInput.value;
+        if (!url) return;
+
+        // Call the crawl function here and wait for it to finish
+        await crawl(url);
+
+        // Enable the search query input after crawling is done
+        queryInput.disabled = false;
+      });
+
+      searchButton.addEventListener("click", async () => {
+        const query = queryInput.value;
+        if (!query) return;
+
+        // Call the search function here
+        const searchResults = await search(query);
+
+        // Display the search results
+        displayResults(searchResults, resultsDiv);
+      });
+    });
+
+    // Add your `crawl` and `search` functions here
+    async function crawl(url) {
+      // Your crawl implementation
+    }
+
+    async function search(query) {
+      // Your search implementation
+      return []; // Return an array of results
+    }
+
+    function displayResults(results, resultsDiv) {
+      // Your display implementation
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
