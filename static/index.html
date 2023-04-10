@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VectorCrawl</title>
   <style>
+    html, body {
+      height: 100%;
+      min-height: 100%;
+    }
     body {
       font-family: Arial, sans-serif;
       text-align: center;
@@ -38,8 +42,8 @@
     <input type="url" id="url" required>
     <button type="submit" id="crawl-button" class="left-align">Crawl</button>
     <label for="query" class="right-align">Enter your search query:</label>
-    <input type="text" id="query" required disabled>
-    <button type="submit" id="search-button" class="left-align">Search</button>
+    <textarea id="query" required disabled></textarea>
+    <button type="submit" id="search-button" class="left-align" disabled>Search</button>
   </div>
   <br>
   <div id="results"></div>
@@ -53,17 +57,26 @@
       const resultsDiv = document.getElementById("results");
 
       // Disable the search query input initially
-      queryInput.disabled = true;
+      queryInput.value = '';
 
       crawlButton.addEventListener("click", async () => {
         const url = urlInput.value;
         if (!url) return;
 
         // Call the crawl function here and wait for it to finish
+        urlInput.disabled = true;
+        crawlButton.disabled = true;
+        const waitCursorStyle = document.createElement('style');
+        waitCursorStyle.innerHTML = `* { cursor: wait !important; }`;
+        document.head.appendChild(waitCursorStyle);
         await crawl(url);
 
         // Enable the search query input after crawling is done
+        document.head.removeChild(waitCursorStyle);
         queryInput.disabled = false;
+        urlInput.disabled = false;
+        crawlButton.disabled = false;
+        searchButton.disabled = false;
       });
 
       searchButton.addEventListener("click", async () => {
@@ -80,7 +93,6 @@
 
     // Add your `crawl` and `search` functions here
     async function crawl(url) {
-      disableEverything();
       try {
         const response = await fetch('/crawl', {
           method: 'POST',
@@ -95,7 +107,6 @@
         const data = await response.json();
         alert(data.message);
         console.log(data.message);
-        enableEverything();
       } catch (error) {
         console.error('Error:', error);
       }
@@ -125,14 +136,6 @@
     function displayResults(results, resultsDiv) {
       // Your display implementation
         alert('TODO: display results')
-    }
-
-    function disableEverything() {
-        document.querySelectorAll('input, button, textarea, select').forEach(element => element.setAttribute('disabled', true));
-    }
-
-    function enableEverything() {
-        document.querySelectorAll('input, button, textarea, select').forEach(element => element.removeAttribute('disabled'));
     }
   </script>
 </body>
