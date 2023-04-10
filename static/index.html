@@ -33,6 +33,19 @@
     .left-align {
       text-align: left;
     }
+    #status-box {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 999;
+    }
+    .hidden {
+        display: none;
+    }
   </style>
 </head>
 <body>
@@ -48,13 +61,19 @@
   <br>
   <div id="results"></div>
 
+  <div id="status-box" class="hidden">
+      <p id="status-text">Status: Waiting for updates...</p>
+  </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", () => {
       const crawlButton = document.getElementById("crawl-button");
       const searchButton = document.getElementById("search-button");
       const urlInput = document.getElementById("url");
       const queryInput = document.getElementById("query");
       const resultsDiv = document.getElementById("results");
+      const statusBox = document.getElementById('status-box');
+      const statusText = document.getElementById('status-text');
 
       // Disable the search query input initially
       queryInput.value = '';
@@ -69,9 +88,12 @@
         const waitCursorStyle = document.createElement('style');
         waitCursorStyle.innerHTML = `* { cursor: wait !important; }`;
         document.head.appendChild(waitCursorStyle);
+        statusBox.classList.remove('hidden');
+        statusText.textContent = "Crawling...";
         await crawl(url);
 
         // Enable the search query input after crawling is done
+        statusBox.classList.add('hidden');
         document.head.removeChild(waitCursorStyle);
         queryInput.disabled = false;
         urlInput.disabled = false;
@@ -132,11 +154,31 @@
       }
     }
 
+    const websocket = new WebSocket('ws://localhost:8080/websocket');
+    console.log('connected to websocket');
+
+    websocket.onopen = (event) => {
+        console.log('WebSocket is open now.');
+    };
+
+    websocket.onclose = (event) => {
+        console.log('WebSocket is closed now.');
+    };
+
+    websocket.onerror = (event) => {
+        console.error('WebSocket error observed:', event);
+    };
+
+    websocket.onmessage = (event) => {
+        let statusText = document.getElementById('status-text');
+        statusText.textContent = event.data;
+    };
 
     function displayResults(results, resultsDiv) {
       // Your display implementation
         alert('TODO: display results')
     }
+
   </script>
 </body>
 </html>

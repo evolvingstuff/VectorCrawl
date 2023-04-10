@@ -1,3 +1,4 @@
+import sqlite3
 import scrapy
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
@@ -35,9 +36,13 @@ class DocumentSpider(scrapy.Spider):
         text = soup.get_text()
         text = ' '.join(text.split())
 
+        page_title = response.css('title::text').get()
+        print(f'\t{response.url}')
+        print(f'\t{page_title}')
+
         self.extracted_texts.append(text)
 
-        self.progress_callback(msg=f'{len(self.extracted_texts)} extracted texts')
+        self.progress_callback(msg=f'{len(self.extracted_texts)} extracted pages')
 
         # Find and follow other links
         for link in soup.find_all('a', href=True):
