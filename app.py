@@ -81,12 +81,6 @@ def broadcast_message(message):
             clients.remove(client)
 
 
-def on_event():
-    # This function will be called when an event occurs
-    broadcast_message("An event has occurred!")
-
-
 if __name__ == '__main__':
-    # run(app, host='localhost', port=8080)
     server = WebSocketServer(('localhost', 8080), Resource({'/': app, '/websocket': WebSocketHandler}))
     server.serve_forever()
