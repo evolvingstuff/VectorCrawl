@@ -80,6 +80,7 @@
 
     // Add your `crawl` and `search` functions here
     async function crawl(url) {
+      disableEverything();
       try {
         const response = await fetch('/crawl', {
           method: 'POST',
@@ -94,6 +95,7 @@
         const data = await response.json();
         alert(data.message);
         console.log(data.message);
+        enableEverything();
       } catch (error) {
         console.error('Error:', error);
       }
@@ -123,6 +125,15 @@
     function displayResults(results, resultsDiv) {
       // Your display implementation
         alert('TODO: display results')
+    }
+
+    function disableEverything() {
+        alert('disable everything')
+        document.querySelectorAll('input, button, textarea, select').forEach(element => element.setAttribute('disabled', true));
+    }
+
+    function enableEverything() {
+        document.querySelectorAll('input, button, textarea, select').forEach(element => element.removeAttribute('disabled'));
     }
   </script>
 </body>
