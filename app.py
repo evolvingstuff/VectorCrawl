@@ -1,4 +1,6 @@
 from bottle import Bottle, request, run, response, static_file
+from scrapy.crawler import CrawlerProcess
+from crawler.spiders.document_crawler import DocumentSpider
 
 app = Bottle()
 
@@ -15,9 +17,16 @@ def crawl():
         response.status = 400
         return {'error': 'URL is required'}
 
+    def progress_callback(msg):
+        print(f'update: {msg}')
+
+    process = CrawlerProcess()
+    process.crawl(DocumentSpider, start_url=url, progress_callback=progress_callback)
+    res = process.start()
+
     # Your crawl implementation here
     # For now, return a stubbed response
-    return {'message': f'Successfully crawled {url}'}
+    return {'message': f'Successfully crawled {url} | ? results'}
 
 
 @app.route('/search', method='POST')
