@@ -16,6 +16,12 @@ def index():
     return static_file('index.html', root='./static')
 
 
+@app.route('/<filename:re:.*\.(js|css)>')
+def serve_static(filename):
+    static_folder = 'static'
+    return static_file(filename, root=static_folder)
+
+
 @app.route('/crawl', method='POST')
 def crawl():
     url = request.forms.get('url')
