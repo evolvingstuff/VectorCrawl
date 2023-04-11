@@ -1,4 +1,5 @@
 import sqlite3
+import os
 import scrapy
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
@@ -17,6 +18,15 @@ class DocumentSpider(scrapy.Spider):
         self.allowed_domain = urlparse(start_url).netloc
         self.start_path = urlparse(start_url).path
         self.extracted_texts = []
+        path = 'extracted_texts.db'
+        if os.path.exists(path):
+            # TODO eventually persist over time
+            os.remove(path)
+        self.conn = sqlite3.connect(path)
+        sql = 'CREATE TABLE IF NOT EXISTS extracted_texts (url TEXT, title TEXT, text TEXT)'
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        self.conn.commit()
 
     def start_requests(self):
         for url in self.start_urls:
@@ -33,12 +43,19 @@ class DocumentSpider(scrapy.Spider):
             element.extract()
 
         # Extract text and remove extra whitespace
-        text = soup.get_text()
+        text = soup.get_text(separator="\n", strip=True)
         text = ' '.join(text.split())
 
         page_title = response.css('title::text').get()
         print(f'\t{response.url}')
         print(f'\t{page_title}')
+
+        # Save to database
+        # TODO do not allow duplicate entries
+        sql = 'INSERT INTO extracted_texts (url, title, text) VALUES (?, ?, ?)'
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (response.url, page_title, text))
+        self.conn.commit()
 
         self.extracted_texts.append(text)
 

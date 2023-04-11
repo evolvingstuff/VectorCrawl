@@ -9,11 +9,11 @@
 <body>
     <h1>VectorCrawl</h1>
     <div class="form-container">
+        <label for="api_key" class="right-align">Enter OpenAI API key:</label>
+        <input type="text" id="api_key" required> &nbsp;
         <label for="url" class="right-align">Enter a URL to crawl and embed:</label>
         <input type="url" id="url" required>
         <button type="submit" id="crawl-button" class="left-align">Crawl</button>
-        <label for="api_key" class="right-align">Enter OpenAI API key:</label>
-        <input type="text" id="api_key" required> &nbsp;
         <label for="query" class="right-align">Enter your search query:</label>
         <textarea id="query" required disabled></textarea>
         <button type="submit" id="search-button" class="left-align" disabled>Search</button>

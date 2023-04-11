@@ -5,6 +5,9 @@ from bottle import Bottle, request, run, response, static_file
 from scrapy.crawler import CrawlerProcess
 from crawler.spiders.document_crawler import DocumentSpider
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
+from langchain.chains import SimpleSequentialChain
+from langchain.embeddings import OpenAIEmbeddings
+
 
 app = Bottle()
 process = CrawlerProcess()
@@ -24,7 +27,9 @@ def serve_static(filename):
 
 @app.route('/crawl', method='POST')
 def crawl():
-    url = request.forms.get('url')
+    data = request.json
+    url = data['url']
+    api_key = data['api_key']
     if not url:
         response.status = 400
         return {'error': 'URL is required'}
@@ -33,12 +38,12 @@ def crawl():
         print(f'clients = {len(clients)} | broadcast: {msg}')
         broadcast_message(msg)
 
-    def run_crawler():
-        process.crawl(DocumentSpider, start_url=url, progress_callback=progress_callback)
-        process.start(stop_after_crawl=True)
-
-    def on_crawl_complete():
-        print('crawl complete')
+    # def run_crawler():
+    #     process.crawl(DocumentSpider, start_url=url, progress_callback=progress_callback)
+    #     process.start(stop_after_crawl=True)
+    #
+    # def on_crawl_complete():
+    #     print('crawl complete')
 
     print('about to run...')
 
@@ -46,11 +51,12 @@ def crawl():
     process = CrawlerProcess()
     process.crawl(DocumentSpider, start_url=url, progress_callback=progress_callback)
     process.start()
-
-    print('got here')
     process.stop()
 
-    return {'message': f'Successfully started craw {url}'}
+    broadcast_message('Generating embeddings...')
+    # TODO run embedding generation here
+
+    return {'message': f'Successfully finished creating embeddings for {url}'}
 
 
 @app.route('/search', method='POST')

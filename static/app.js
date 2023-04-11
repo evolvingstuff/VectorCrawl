@@ -27,6 +27,7 @@ crawlButton.addEventListener('click', async () => {
     // Call the crawl function here and wait for it to finish
     urlInput.disabled = true;
     crawlButton.disabled = true;
+    apiKeyInput.disabled = true;
     const waitCursorStyle = document.createElement('style');
     waitCursorStyle.innerHTML = `* { cursor: wait !important; }`;
     document.head.appendChild(waitCursorStyle);
@@ -41,6 +42,7 @@ crawlButton.addEventListener('click', async () => {
     urlInput.disabled = false;
     crawlButton.disabled = false;
     searchButton.disabled = false;
+    apiKeyInput.disabled = false;
 });
 
 searchButton.addEventListener('click', async () => {
@@ -58,10 +60,15 @@ searchButton.addEventListener('click', async () => {
 // Add your `crawl` and `search` functions here
 async function crawl(url) {
     try {
+        let apiKeyInput = document.getElementById('api_key');
+        let req = {
+            'url': url,
+            'api_key': apiKeyInput.value
+        }
         const response = await fetch('/crawl', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `url=${encodeURIComponent(url)}`,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(req)
         });
 
         if (!response.ok) {
@@ -78,10 +85,15 @@ async function crawl(url) {
 
 async function search(query) {
     try {
+        let apiKeyInput = document.getElementById('api_key');
+        let req = {
+            'query': query,
+            'api_key': apiKeyInput.value
+        }
         const response = await fetch('/search', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `query=${encodeURIComponent(query)}`,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(req)
         });
 
         if (!response.ok) {
