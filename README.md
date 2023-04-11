@@ -7,3 +7,7 @@ With VectorCrawl, you simply provide a URL and let the app do the heavy lifting.
 When you have a query, just enter it into VectorCrawl. The app will embed your query, find the k-nearest vectors in the database, and retrieve the most relevant documents for you.
 
 Discover the power of semantic search with VectorCrawl, and unlock a world of highly relevant and easily accessible web content!
+
+#### Screenshot:
+
+![VectorCrawl Screenshot](docs/screenshot.png)
