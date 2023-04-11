@@ -17,13 +17,21 @@ class DocumentSpider(scrapy.Spider):
         self.progress_callback = progress_callback
         self.allowed_domain = urlparse(start_url).netloc
         self.start_path = urlparse(start_url).path
+        self.unique_urls = set()
         self.extracted_texts = []
         path = 'extracted_texts.db'
         if os.path.exists(path):
             # TODO eventually persist over time
             os.remove(path)
         self.conn = sqlite3.connect(path)
-        sql = 'CREATE TABLE IF NOT EXISTS extracted_texts (url TEXT, title TEXT, text TEXT)'
+        sql = '''
+            CREATE TABLE IF NOT EXISTS 
+            extracted_texts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                url TEXT, 
+                title TEXT, 
+                text TEXT)
+        '''
         cursor = self.conn.cursor()
         cursor.execute(sql)
         self.conn.commit()
@@ -65,6 +73,12 @@ class DocumentSpider(scrapy.Spider):
         for link in soup.find_all('a', href=True):
             next_url = link['href']
             next_url = urljoin(response.url, next_url)
+
+            # # TODO better logic for avoiding duplicate links
+            # if next_url in self.unique_urls:
+            #     print(f'\t\t{next_url} (duplicate skipped)')
+            #     continue
+            # self.unique_urls.add(next_url)
 
             # Check if the link is within the same portion of the website
             if (urlparse(next_url).netloc == self.allowed_domain and
